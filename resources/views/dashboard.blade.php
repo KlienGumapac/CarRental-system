@@ -24,7 +24,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
-<body class="bg-gray-50 dark:bg-gray-900 min-h-screen">
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen" x-data="{}" x-init="
+    // Initialize dark mode on page load
+    const savedDarkMode = localStorage.getItem('darkMode');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (savedDarkMode === 'true' || (!savedDarkMode && prefersDark)) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.documentElement.style.colorScheme = 'dark';
+        document.documentElement.style.setProperty('color-scheme', 'dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.documentElement.style.colorScheme = 'light';
+        document.documentElement.style.setProperty('color-scheme', 'light');
+    }
+">
     <!-- Sidebar -->
     @include('components.sidebar')
 

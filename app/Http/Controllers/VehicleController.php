@@ -142,4 +142,139 @@ class VehicleController extends Controller
         return redirect()->route('vehicles.index')
             ->with('success', 'Vehicle added successfully!');
     }
+
+    /**
+     * Show the form for editing the specified vehicle
+     */
+    public function edit(Vehicle $vehicle)
+    {
+        return view('vehicles.edit', compact('vehicle'));
+    }
+
+    /**
+     * Update the specified vehicle in storage
+     */
+    public function update(Request $request, Vehicle $vehicle)
+    {
+        $request->validate([
+            'car_id' => 'required|string|max:10|unique:vehicles,car_id,' . $vehicle->id,
+            'license_plate' => 'required|string|max:20|unique:vehicles,license_plate,' . $vehicle->id,
+            'make' => 'required|string|max:50',
+            'model' => 'required|string|max:50',
+            'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
+            'color' => 'required|string|max:30',
+            'car_type' => 'required|string|max:30',
+            'transmission' => 'required|string|max:20',
+            'fuel_type' => 'required|string|max:20',
+            'daily_rate' => 'required|numeric|min:0',
+            'availability' => 'required|string|max:20',
+            'mileage' => 'required|integer|min:0',
+            'seating_capacity' => 'required|integer|min:1|max:20',
+            'insurance' => 'required|string|max:50',
+            'last_service' => 'required|date',
+            'condition' => 'required|string|max:30',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        // Handle image uploads
+        $imagePaths = $vehicle->images ?? [];
+
+        if ($request->hasFile('images')) {
+            // Create vehicles directory if it doesn't exist
+            $vehiclesPath = storage_path('app/public/vehicles');
+            if (!file_exists($vehiclesPath)) {
+                mkdir($vehiclesPath, 0755, true);
+            }
+
+            foreach ($request->file('images') as $index => $image) {
+                if ($image->isValid()) {
+                    // Generate unique filename
+                    $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                    $path = $image->storeAs('vehicles', $filename, 'public');
+                    $imagePaths[] = $path;
+                }
+            }
+        }
+
+        // Handle image removal
+        if ($request->has('remove_images')) {
+            $removeImages = $request->remove_images;
+            foreach ($removeImages as $imagePath) {
+                if (Storage::disk('public')->exists($imagePath)) {
+                    Storage::disk('public')->delete($imagePath);
+                }
+                $imagePaths = array_diff($imagePaths, [$imagePath]);
+            }
+        }
+
+        // Prepare vehicle data
+        $vehicleData = [
+            'car_id' => $request->car_id,
+            'license_plate' => $request->license_plate,
+            'make' => $request->make,
+            'model' => $request->model,
+            'year' => $request->year,
+            'color' => $request->color,
+            'car_type' => $request->car_type,
+            'transmission' => $request->transmission,
+            'fuel_type' => $request->fuel_type,
+            'daily_rate' => $request->daily_rate,
+            'availability' => $request->availability,
+            'mileage' => $request->mileage,
+            'seating_capacity' => (int) $request->seating_capacity,
+            'insurance' => $request->insurance,
+            'last_service' => $request->last_service,
+            'condition' => $request->condition,
+            'images' => array_values($imagePaths), // Re-index array
+        ];
+
+        // Update the vehicle
+        $vehicle->update($vehicleData);
+
+        return redirect()->route('vehicles.index')
+            ->with('success', 'Vehicle updated successfully!');
+    }
+
+    /**
+     * Remove the specified vehicle from storage
+     */
+    public function destroy(Vehicle $vehicle)
+    {
+        try {
+            // Log the deletion attempt
+            Log::info('Vehicle deletion started:', [
+                'vehicle_id' => $vehicle->id,
+                'vehicle_name' => $vehicle->make . ' ' . $vehicle->model
+            ]);
+
+            // Delete associated images from storage
+            if ($vehicle->images && is_array($vehicle->images)) {
+                foreach ($vehicle->images as $imagePath) {
+                    if (Storage::disk('public')->exists($imagePath)) {
+                        Storage::disk('public')->delete($imagePath);
+                        Log::info('Deleted image:', ['path' => $imagePath]);
+                    }
+                }
+            }
+
+            // Delete the vehicle record
+            $vehicle->delete();
+
+            Log::info('Vehicle deleted successfully:', [
+                'vehicle_id' => $vehicle->id,
+                'vehicle_name' => $vehicle->make . ' ' . $vehicle->model
+            ]);
+
+            return redirect()->route('vehicles.index')
+                ->with('success', 'Vehicle deleted successfully!');
+        } catch (\Exception $e) {
+            Log::error('Vehicle deletion failed:', [
+                'vehicle_id' => $vehicle->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return redirect()->route('vehicles.index')
+                ->with('error', 'Failed to delete vehicle. Please try again.');
+        }
+    }
 }

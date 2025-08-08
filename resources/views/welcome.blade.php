@@ -20,7 +20,22 @@
     @endif
 </head>
 
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 min-h-screen">
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 min-h-screen" x-data="{}" x-init="
+    // Initialize dark mode on page load
+    const savedDarkMode = localStorage.getItem('darkMode');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (savedDarkMode === 'true' || (!savedDarkMode && prefersDark)) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.documentElement.style.colorScheme = 'dark';
+        document.documentElement.style.setProperty('color-scheme', 'dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.documentElement.style.colorScheme = 'light';
+        document.documentElement.style.setProperty('color-scheme', 'light');
+    }
+">
     <div class="min-h-screen flex flex-col justify-center items-center p-4">
         <!-- Logo and Brand -->
         <div class="text-center mb-8">

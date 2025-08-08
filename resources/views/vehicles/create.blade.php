@@ -12,9 +12,27 @@
     @else
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     @endif
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
-<body class="bg-gray-50 dark:bg-gray-900 min-h-screen">
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen" x-data="{}" x-init="
+    // Initialize dark mode on page load
+    const savedDarkMode = localStorage.getItem('darkMode');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (savedDarkMode === 'true' || (!savedDarkMode && prefersDark)) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.documentElement.style.colorScheme = 'dark';
+        document.documentElement.style.setProperty('color-scheme', 'dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.documentElement.style.colorScheme = 'light';
+        document.documentElement.style.setProperty('color-scheme', 'light');
+    }
+">
     <!-- Sidebar -->
     @include('components.sidebar')
 
@@ -47,20 +65,37 @@
             </div>
         </header>
 
-        <!-- Page Content -->
-        <main class="p-4 sm:p-6 lg:p-8">
-            <div class="max-w-4xl mx-auto">
-                <!-- Form Card -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-                    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
-                        <h2 class="text-xl font-semibold text-white">Vehicle Information</h2>
-                        <p class="text-blue-100 mt-1">Enter the details for the new vehicle</p>
+        <!-- Full Screen Content -->
+        <main class="min-h-screen p-4 sm:p-6 lg:p-8">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-white mb-8">
+                <div class="flex items-center space-x-6">
+                    <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                        <i class="fas fa-car text-white text-3xl"></i>
                     </div>
+                    <div>
+                        <h2 class="text-3xl font-bold mb-2">Add New Vehicle</h2>
+                        <p class="text-blue-100 text-lg">Enter the details for the new vehicle</p>
+                        <p class="text-blue-200 text-sm mt-1">Fill in all required information and upload images</p>
+                    </div>
+                </div>
+            </div>
 
-                    <form method="POST" action="{{ route('vehicles.store') }}" enctype="multipart/form-data" class="p-6 space-y-8">
-                        @csrf
+            <!-- Form Content -->
+            <div class="w-full">
+                <form method="POST" action="{{ route('vehicles.store') }}" enctype="multipart/form-data" class="space-y-8">
+                    @csrf
 
-                        <!-- Basic Information -->
+                    <!-- Basic Information -->
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+                            <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            Basic Information
+                        </h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             <div>
                                 <label for="car_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -335,17 +370,25 @@
                             <a href="{{ route('vehicles.index') }}" class="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                 Cancel
                             </a>
-                            <button type="submit" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-medium rounded-lg shadow-sm transition-all duration-200 transform hover:scale-105 active:scale-95">
-                                <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                </svg>
-                                Add Vehicle
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                            <!-- Action Buttons -->
+                            <div class="flex items-center justify-center space-x-4 pt-8">
+                                <a href="{{ route('vehicles.index') }}" class="px-8 py-4 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium transition-colors">
+                                    <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                    Cancel
+                                </a>
+                                <button type="submit" class="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 active:scale-95">
+                                    <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                    Add Vehicle
+                                </button>
+                            </div>
+                </form>
             </div>
-        </main>
+    </div>
+    </main>
     </div>
 
     <script>

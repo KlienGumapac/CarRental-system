@@ -17,7 +17,22 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
-<body class="bg-gray-50 dark:bg-gray-900 min-h-screen">
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen" x-data="{}" x-init="
+    // Initialize dark mode on page load
+    const savedDarkMode = localStorage.getItem('darkMode');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (savedDarkMode === 'true' || (!savedDarkMode && prefersDark)) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.documentElement.style.colorScheme = 'dark';
+        document.documentElement.style.setProperty('color-scheme', 'dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.documentElement.style.colorScheme = 'light';
+        document.documentElement.style.setProperty('color-scheme', 'light');
+    }
+">
     <!-- Sidebar -->
     @include('components.sidebar')
 
@@ -63,6 +78,22 @@
                     </div>
                     <div class="ml-3">
                         <p class="text-sm text-green-800 dark:text-green-200">{{ session('success') }}</p>
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            <!-- Error Message -->
+            @if(session('error'))
+            <div class="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-red-800 dark:text-red-200">{{ session('error') }}</p>
                     </div>
                 </div>
             </div>
@@ -176,14 +207,14 @@
                         @if($vehicle->images && count($vehicle->images) > 0)
                         <img src="{{ Storage::url($vehicle->images[0]) }}"
                             alt="{{ $vehicle->make }} {{ $vehicle->model }}"
-                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                        @else
-                        <div class="w-full h-full bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center">
+                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        @endif
+                        <div class="w-full h-full bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center {{ $vehicle->images && count($vehicle->images) > 0 ? 'hidden' : '' }}">
                             <svg class="w-20 h-20 text-white opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                             </svg>
                         </div>
-                        @endif
 
                         <!-- Gradient Overlay -->
                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -217,9 +248,14 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                     </svg>
                                 </button>
-                                <button class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-white/30 transition-colors duration-200">
+                                <a href="{{ route('vehicles.edit', $vehicle) }}" class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-white/30 transition-colors duration-200">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </a>
+                                <button class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-white/30 transition-colors duration-200" onclick="confirmDeleteVehicle('{{ $vehicle->id }}', '{{ $vehicle->make }} {{ $vehicle->model }}')">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                     </svg>
                                 </button>
                             </div>
@@ -342,6 +378,11 @@
                             <div class="relative rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800 h-80">
                                 <img id="mainImage" src="" alt="Vehicle" class="w-full h-full object-cover">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                                <div id="mainImageFallback" class="hidden w-full h-full flex items-center justify-center">
+                                    <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                    </svg>
+                                </div>
                             </div>
 
                             <!-- Thumbnail Gallery -->
@@ -434,6 +475,68 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 z-50 hidden">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
+
+        <!-- Modal Content -->
+        <div class="relative min-h-screen flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full transform transition-all duration-300 scale-95 opacity-0" id="deleteModalContent">
+                <!-- Modal Header -->
+                <div class="relative bg-gradient-to-r from-red-600 to-pink-600 text-white p-6 rounded-t-2xl">
+                    <button onclick="closeDeleteModal()" class="absolute top-4 right-4 text-white/80 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold">Delete Vehicle</h2>
+                            <p class="text-red-100 text-sm">This action cannot be undone</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="p-6">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Are you sure?</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-6">
+                            You are about to delete <span class="font-semibold text-gray-900 dark:text-white" id="deleteVehicleName">this vehicle</span>.
+                            This action will permanently remove the vehicle and all associated images from the system.
+                        </p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex space-x-3">
+                        <button onclick="closeDeleteModal()" class="flex-1 px-4 py-3 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl font-medium transition-colors duration-200">
+                            Cancel
+                        </button>
+                        <form id="deleteVehicleForm" method="POST" class="flex-1">
+                            @csrf
+                            @method('DELETE')
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="w-full px-4 py-3 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 active:scale-95">
+                                Delete Vehicle
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -591,11 +694,15 @@
             if (images && images.length > 0) {
                 // Set main image
                 mainImage.src = `/storage/${images[0]}`;
+                mainImage.onerror = function() {
+                    this.style.display = 'none';
+                    document.getElementById('mainImageFallback').style.display = 'flex';
+                };
 
                 // Create thumbnails
                 images.forEach((image, index) => {
                     const thumbnail = document.createElement('div');
-                    thumbnail.className = 'relative cursor-pointer rounded-lg overflow-hidden h-20 hover:opacity-80 transition-opacity';
+                    thumbnail.className = 'relative cursor-pointer rounded-lg overflow-hidden h-20 hover:opacity-80 transition-opacity thumbnail';
                     thumbnail.onclick = () => {
                         mainImage.src = `/storage/${image}`;
                         // Update active thumbnail
@@ -604,7 +711,7 @@
                     };
 
                     thumbnail.innerHTML = `
-                        <img src="/storage/${image}" alt="Vehicle image ${index + 1}" class="w-full h-full object-cover">
+                        <img src="/storage/${image}" alt="Vehicle image ${index + 1}" class="w-full h-full object-cover" onerror="this.parentElement.style.display='none';">
                     `;
 
                     if (index === 0) {
@@ -631,8 +738,56 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeVehicleModal();
+                closeDeleteModal();
             }
         });
+
+        // Delete Vehicle Functions
+        function confirmDeleteVehicle(vehicleId, vehicleName) {
+            const modal = document.getElementById('deleteModal');
+            const modalContent = document.getElementById('deleteModalContent');
+            const deleteForm = document.getElementById('deleteVehicleForm');
+            const vehicleNameElement = document.getElementById('deleteVehicleName');
+
+            // Update form action and vehicle name
+            deleteForm.action = `/vehicles/${vehicleId}`;
+            vehicleNameElement.textContent = vehicleName;
+
+            // Show modal with animation
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        // Add form submission handler to show loading state
+        document.getElementById('deleteVehicleForm').addEventListener('submit', function(e) {
+            const submitButton = this.querySelector('button[type="submit"]');
+            const originalText = submitButton.innerHTML;
+
+            // Show loading state
+            submitButton.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Deleting...
+            `;
+            submitButton.disabled = true;
+        });
+
+        function closeDeleteModal() {
+            const modal = document.getElementById('deleteModal');
+            const modalContent = document.getElementById('deleteModalContent');
+
+            modalContent.classList.add('scale-95', 'opacity-0');
+            modalContent.classList.remove('scale-100', 'opacity-100');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
     </script>
 </body>
 

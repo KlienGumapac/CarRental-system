@@ -20,7 +20,9 @@ NexaDrive is a comprehensive car rental management system that provides a sleek,
 -   **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
 -   **Dark Mode**: Toggle between light and dark themes with persistent preference
 -   **Futuristic Design**: Modern gradients, shadows, and hover effects
--   **Tailwind CSS**: Latest styling with custom components
+-   **Tailwind CSS v4**: Latest styling with custom components and dark mode support
+-   **Cross-Page Consistency**: Dark mode works across all pages automatically
+-   **Enhanced Visibility**: Optimized text contrast and readability in dark mode
 
 ### 🏠 Dashboard
 
@@ -31,15 +33,18 @@ NexaDrive is a comprehensive car rental management system that provides a sleek,
 
 ### 🚙 Vehicle Management
 
--   **Vehicle Listing**: Beautiful card-based vehicle display
+-   **Vehicle Listing**: Beautiful card-based vehicle display with hover effects
 -   **Add Vehicles**: Comprehensive form with 16 vehicle fields:
     -   Car ID, License Plate, Make, Model, Year
     -   Color, Car Type, Transmission, Fuel Type
     -   Daily Rate, Availability, Mileage, Seating Capacity
     -   Insurance, Last Service, Condition
--   **Image Upload**: Support for up to 3 images per vehicle
+-   **Image Upload**: Support for up to 3 images per vehicle with preview
 -   **Image Preview**: Real-time image preview with removal capability
 -   **Database Storage**: Complete data persistence with image storage
+-   **Edit Vehicles**: Full-screen edit interface with image management
+-   **Delete Vehicles**: Confirmation modal with success messages
+-   **Image Management**: Add/remove images with preview functionality
 
 ### 📱 Vehicle Details Modal
 
@@ -56,8 +61,12 @@ NexaDrive is a comprehensive car rental management system that provides a sleek,
 
 -   **Hover Effects**: Beautiful hover animations on vehicle cards
 -   **Status Badges**: Animated availability indicators
--   **Quick Actions**: Eye icon for viewing details, edit button
+-   **Quick Actions**: Eye icon for viewing details, edit button, delete button
 -   **Mobile Responsive**: Optimized sidebar and navigation
+-   **Delete Confirmation**: Modal with loading states and success messages
+-   **Image Management**: Add/remove images with real-time preview
+-   **Form Validation**: Client-side and server-side validation
+-   **Success Messages**: User feedback for all CRUD operations
 
 ## 🛠 Technical Stack
 
@@ -71,9 +80,11 @@ NexaDrive is a comprehensive car rental management system that provides a sleek,
 ### Frontend
 
 -   **Blade Templates**: Laravel's templating engine
--   **Tailwind CSS**: Utility-first CSS framework
+-   **Tailwind CSS v4**: Latest utility-first CSS framework with dark mode
 -   **JavaScript**: Interactive features and animations
 -   **Vite**: Asset compilation and hot reloading
+-   **Dark Mode System**: Global dark mode with localStorage persistence
+-   **Custom CSS**: Enhanced dark mode styles for optimal visibility
 
 ### Database Schema
 
@@ -149,6 +160,15 @@ vehicles table:
     php artisan serve
     ```
 
+### Dark Mode Setup
+
+The system includes a comprehensive dark mode system that:
+
+-   Persists user preference across sessions
+-   Works across all pages automatically
+-   Provides optimal text contrast and readability
+-   Includes enhanced CSS styles for all components
+
 ### Default Login
 
 -   **Email**: admin@nexadrive.com
@@ -187,6 +207,7 @@ CarRental/
 -   Smooth animations and transitions
 -   Gradient backgrounds and modern shadows
 -   Responsive grid layouts
+-   Dark mode support with optimal contrast
 
 ### User Experience
 
@@ -194,6 +215,7 @@ CarRental/
 -   Clear visual hierarchy
 -   Consistent design language
 -   Mobile-first approach
+-   Persistent user preferences
 
 ### Performance
 
@@ -201,6 +223,7 @@ CarRental/
 -   Efficient database queries
 -   Responsive image handling
 -   Fast page transitions
+-   Optimized dark mode rendering
 
 ## 🔧 Development Features
 
@@ -217,6 +240,8 @@ CarRental/
 -   Input validation
 -   File upload security
 -   Authentication middleware
+-   Image validation and sanitization
+-   Secure file storage
 
 ### Scalability
 
@@ -224,6 +249,8 @@ CarRental/
 -   Reusable components
 -   Database optimization
 -   Asset management
+-   Image storage optimization
+-   Dark mode system scalability
 
 ## 🚀 Future Enhancements
 
@@ -237,6 +264,10 @@ CarRental/
 -   [ ] Email notifications
 -   [ ] API endpoints
 -   [ ] Mobile app integration
+-   [ ] Advanced image management
+-   [ ] Bulk operations
+-   [ ] Vehicle categories
+-   [ ] Maintenance history
 
 ### Technical Improvements
 
@@ -246,6 +277,9 @@ CarRental/
 -   [ ] Advanced search/filtering
 -   [ ] Export functionality
 -   [ ] Backup system
+-   [ ] Image optimization
+-   [ ] Caching system
+-   [ ] Real-time updates
 
 ## 📝 License
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Vehicle extends Model
 {
@@ -43,7 +44,16 @@ class Vehicle extends Model
      */
     public function getImagesAttribute($value)
     {
-        return $value ? json_decode($value, true) : [];
+        $images = $value ? json_decode($value, true) : [];
+
+        // Filter out images that don't exist in storage
+        if (is_array($images)) {
+            $images = array_filter($images, function ($image) {
+                return \Storage::disk('public')->exists($image);
+            });
+        }
+
+        return $images;
     }
 
     /**

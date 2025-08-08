@@ -84,35 +84,8 @@
 <!-- Mobile Overlay with Blur -->
 <div id="sidebarOverlay" class="fixed inset-0 z-40 backdrop-blur-sm lg:hidden hidden"></div>
 
-<!-- Dark Mode Script -->
+<!-- Mobile Sidebar Script -->
 <script>
-    // Dark mode functionality
-    const darkModeToggle = document.getElementById('darkModeToggle');
-    const darkModeThumb = document.getElementById('darkModeThumb');
-    const html = document.documentElement;
-
-    // Check for saved dark mode preference or default to light mode
-    if (localStorage.getItem('darkMode') === 'true' ||
-        (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        html.classList.add('dark');
-        darkModeThumb.classList.add('translate-x-6');
-        darkModeThumb.classList.remove('translate-x-1');
-    }
-
-    darkModeToggle.addEventListener('click', () => {
-        html.classList.toggle('dark');
-        const isDark = html.classList.contains('dark');
-        localStorage.setItem('darkMode', isDark);
-
-        if (isDark) {
-            darkModeThumb.classList.add('translate-x-6');
-            darkModeThumb.classList.remove('translate-x-1');
-        } else {
-            darkModeThumb.classList.remove('translate-x-6');
-            darkModeThumb.classList.add('translate-x-1');
-        }
-    });
-
     // Mobile sidebar functionality
     const sidebar = document.getElementById('sidebar');
     const sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -134,4 +107,116 @@
 
     // Expose openSidebar function globally for mobile menu button
     window.openSidebar = openSidebar;
+
+    // Dark mode functionality (Tailwind CSS v4) - Direct approach
+    function initializeDarkMode() {
+        console.log('=== DARK MODE INITIALIZATION START ===');
+
+        const html = document.documentElement;
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkModeThumb = document.getElementById('darkModeThumb');
+
+        console.log('HTML element:', html);
+        console.log('Dark mode toggle:', darkModeToggle);
+        console.log('Dark mode thumb:', darkModeThumb);
+
+        if (!darkModeToggle || !darkModeThumb) {
+            console.error('Dark mode elements not found!');
+            console.log('darkModeToggle exists:', !!darkModeToggle);
+            console.log('darkModeThumb exists:', !!darkModeThumb);
+            return;
+        }
+
+        console.log('All elements found, initializing...');
+
+        // Check for saved dark mode preference or default to light mode
+        const savedDarkMode = localStorage.getItem('darkMode');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        console.log('Saved dark mode:', savedDarkMode);
+        console.log('Prefers dark:', prefersDark);
+
+        if (savedDarkMode === 'true' || (!savedDarkMode && prefersDark)) {
+            html.classList.add('dark');
+            html.setAttribute('data-theme', 'dark');
+            html.style.colorScheme = 'dark';
+            html.style.setProperty('color-scheme', 'dark');
+            darkModeThumb.classList.add('translate-x-6');
+            darkModeThumb.classList.remove('translate-x-1');
+            console.log('✅ Dark mode enabled');
+        } else {
+            html.classList.remove('dark');
+            html.setAttribute('data-theme', 'light');
+            html.style.colorScheme = 'light';
+            html.style.setProperty('color-scheme', 'light');
+            darkModeThumb.classList.remove('translate-x-6');
+            darkModeThumb.classList.add('translate-x-1');
+            console.log('✅ Light mode enabled');
+        }
+
+        // Add click event listener with more debugging
+        darkModeToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🎯 Dark mode toggle clicked!');
+            console.log('Event target:', e.target);
+            console.log('Current classes on html:', html.classList.toString());
+
+            html.classList.toggle('dark');
+            const isDark = html.classList.contains('dark');
+            localStorage.setItem('darkMode', isDark);
+
+            console.log('Is dark after toggle:', isDark);
+
+            if (isDark) {
+                html.setAttribute('data-theme', 'dark');
+                html.style.colorScheme = 'dark';
+                html.style.setProperty('color-scheme', 'dark');
+                darkModeThumb.classList.add('translate-x-6');
+                darkModeThumb.classList.remove('translate-x-1');
+                console.log('✅ Switched to dark mode');
+            } else {
+                html.setAttribute('data-theme', 'light');
+                html.style.colorScheme = 'light';
+                html.style.setProperty('color-scheme', 'light');
+                darkModeThumb.classList.remove('translate-x-6');
+                darkModeThumb.classList.add('translate-x-1');
+                console.log('✅ Switched to light mode');
+            }
+
+            console.log('Final classes on html:', html.classList.toString());
+            console.log('Final data-theme:', html.getAttribute('data-theme'));
+            console.log('Final colorScheme:', html.style.colorScheme);
+            console.log('Final color-scheme CSS property:', html.style.getPropertyValue('color-scheme'));
+
+            // Force a repaint to ensure changes are visible
+            document.body.offsetHeight;
+        });
+
+        console.log('=== DARK MODE INITIALIZATION COMPLETE ===');
+    }
+
+    // Initialize dark mode with multiple triggers
+    console.log('Document ready state:', document.readyState);
+
+    if (document.readyState === 'loading') {
+        console.log('Document still loading, adding DOMContentLoaded listener');
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOMContentLoaded fired');
+            initializeDarkMode();
+        });
+    } else {
+        console.log('Document already loaded, initializing immediately');
+        initializeDarkMode();
+    }
+
+    // Also try on window load
+    window.addEventListener('load', () => {
+        console.log('Window load fired');
+        // Don't reinitialize, just check if it's working
+        const html = document.documentElement;
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        console.log('On window load - HTML classes:', html.classList.toString());
+        console.log('On window load - Toggle exists:', !!darkModeToggle);
+    });
 </script>
