@@ -43,25 +43,26 @@ NexaDrive is a comprehensive car rental management system that provides a sleek,
 -   **Image Preview**: Real-time image preview with removal capability
 -   **Database Storage**: Complete data persistence with image storage
 -   **Edit Vehicles**: Full-screen edit interface with image management
+-   **Rent Vehicles**: Dedicated rent page with renter info, date range, editable pricing, auto-calculated totals
 -   **Delete Vehicles**: Confirmation modal with success messages
 -   **Image Management**: Add/remove images with preview functionality
 
-### 📱 Vehicle Details Modal
+### 📄 Vehicle Details Page
 
--   **Large Modal**: Full-screen vehicle details view
--   **Image Gallery**: Main image with thumbnail navigation
+-   **Dedicated Page**: Full, read-only details page (replaces modal)
+-   **Image Gallery**: Large main image with clickable thumbnails
 -   **Comprehensive Info**: All vehicle details organized in sections:
-    -   Basic Information (Make, Model, Year, Color, Type)
+    -   Basic Information (Make, Model, Year, Color, Type, Plate)
     -   Specifications (Transmission, Fuel, Seating, Mileage)
     -   Pricing & Status (Daily Rate, Availability Status)
     -   Additional Information (Insurance, Condition, Last Service)
--   **Modern Interactions**: Smooth animations and transitions
+-   **Modern Interactions**: Smooth transitions, dark-mode friendly
 
 ### 🎯 Interactive Features
 
 -   **Hover Effects**: Beautiful hover animations on vehicle cards
 -   **Status Badges**: Animated availability indicators
--   **Quick Actions**: Eye icon for viewing details, edit button, delete button
+-   **Quick Actions**: View, Rent, Edit, Delete actions on each card
 -   **Mobile Responsive**: Optimized sidebar and navigation
 -   **Delete Confirmation**: Modal with loading states and success messages
 -   **Image Management**: Add/remove images with real-time preview
@@ -85,6 +86,7 @@ NexaDrive is a comprehensive car rental management system that provides a sleek,
 -   **Vite**: Asset compilation and hot reloading
 -   **Dark Mode System**: Global dark mode with localStorage persistence
 -   **Custom CSS**: Enhanced dark mode styles for optimal visibility
+-   **Accessible Colors**: Sidebar, cards, and modals tuned for contrast
 
 ### Database Schema
 
@@ -159,6 +161,14 @@ vehicles table:
     ```bash
     php artisan serve
     ```
+
+### Renting Flow
+
+-   From `Vehicles` page, click `Rent` on any vehicle card
+-   Fill renter info (name, ID, contact), choose dates
+-   Adjust daily rate, discount, and extra fees if needed
+-   Totals auto-calculate (days, subtotal, total)
+-   Submit to save (extend to persist rentals later)
 
 ### Dark Mode Setup
 

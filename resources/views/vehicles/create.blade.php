@@ -79,14 +79,14 @@
                         <p class="text-blue-200 text-sm mt-1">Fill in all required information and upload images</p>
                     </div>
                 </div>
-            </div>
+                    </div>
 
             <!-- Form Content -->
             <div class="w-full">
                 <form method="POST" action="{{ route('vehicles.store') }}" enctype="multipart/form-data" class="space-y-8">
-                    @csrf
+                        @csrf
 
-                    <!-- Basic Information -->
+                        <!-- Basic Information -->
                     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
                         <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
                             <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mr-3">
@@ -379,16 +379,16 @@
                                     Cancel
                                 </a>
                                 <button type="submit" class="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-medium transition-all duration-200 transform hover:scale-105 active:scale-95">
-                                    <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                    </svg>
-                                    Add Vehicle
-                                </button>
-                            </div>
-                </form>
+                                <svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Add Vehicle
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-    </div>
-    </main>
+        </main>
     </div>
 
     <script>

@@ -144,6 +144,61 @@ class VehicleController extends Controller
     }
 
     /**
+     * Display the specified vehicle (details page)
+     */
+    public function show(Vehicle $vehicle)
+    {
+        return view('vehicles.show', compact('vehicle'));
+    }
+
+    /**
+     * Show rent form for a vehicle
+     */
+    public function rent(Vehicle $vehicle)
+    {
+        return view('vehicles.rent', compact('vehicle'));
+    }
+
+    /**
+     * Store rental submission (placeholder)
+     */
+    public function rentStore(Request $request, Vehicle $vehicle)
+    {
+        $validated = $request->validate([
+            'renter_name' => 'required|string|max:100',
+            'renter_id' => 'required|string|max:50',
+            'contact' => 'required|string|max:50',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'daily_rate' => 'required|numeric|min:0',
+            'discount' => 'nullable|numeric|min:0',
+            'extra_fees' => 'nullable|numeric|min:0',
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        // For now, just redirect back with calculated total preview
+        $start = new \Carbon\Carbon($validated['start_date']);
+        $end = new \Carbon\Carbon($validated['end_date']);
+        $days = max(1, $start->diffInDays($end) ?: 1);
+        $rate = (float) $validated['daily_rate'];
+        $discount = (float) ($validated['discount'] ?? 0);
+        $extras = (float) ($validated['extra_fees'] ?? 0);
+        $subtotal = $days * $rate;
+        $total = max(0, $subtotal - $discount + $extras);
+
+        return redirect()->route('vehicles.rent', $vehicle)
+            ->with('success', 'Rental computed successfully.')
+            ->with('preview', [
+                'days' => $days,
+                'rate' => $rate,
+                'discount' => $discount,
+                'extras' => $extras,
+                'subtotal' => $subtotal,
+                'total' => $total,
+            ]);
+    }
+
+    /**
      * Show the form for editing the specified vehicle
      */
     public function edit(Vehicle $vehicle)
